@@ -97,7 +97,6 @@ def find_match(noEquivalents):
 
     print("EQUIVALENTS", equivalents)
     if not equivalents:             #We check if the equivalents table is empty, means that it can't be minimized
-        print("THERE ARE NO EQUIVALENTS")
         noEquivalents=False
 
     print("------------------------------------------------------------------")
@@ -150,7 +149,19 @@ def find_match(noEquivalents):
         print("STATES: ",states, "\n")
         print("TEMPORAL DICTIONARY: ",temp_dict, "\n")
         print("ORIGINAL DICTIONARY: ", dicc, "\n")
-        print("NEW DICTIONARY: ", new_dict,"\n")
+        print("MINIMIZED DICTIONARY: ", new_dict,"\n")
+        print("EQUIVALENCE TABLE: ")
+        table_f = []
+        for state in states:
+            row_state = []
+            row_state.append(state)
+            row_state.append([])
+            for lang in symbols:
+                key = state + lang
+                row_state[1].append(new_dict[key])
+            table_f.append(row_state)
+        for item in table_f:
+            print(item)
         print("-----------------------------------------------------------------------------------------------")
     return new_dict,noEquivalents
 
@@ -165,13 +176,18 @@ while(opcion2!=3):
         print("GIVE THE STRING TO VALIDATE")
         print("THIS IS THE LANGUAGE: ",symbols)
         opcion3=str(input())
-        print(check_dfa(str(opcion3)))
+        if check_dfa(str(opcion3)):
+            print("TRUE: The string is validated because ends in a final state")
+        else:
+            print("FALSE: The string is not validated because it does not end in final state")
 
     elif opcion2==2:
         print("---------------------------------------------------------")
         fill_keys()
 
-        while(equivalent==True):            #We loop the minized function until there are no equivalents
+        if equivalent:            #We loop the minized function until there are no equivalents
             dicc,equivalent=find_match(equivalent)
+        else:
+            print("THERE ARE NO EQUIVALENTS OR CANNOT BE MINIMIZED ANYMORE")
         print("---------------------------------------------------------")
 
