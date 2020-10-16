@@ -11,12 +11,13 @@ globalIndex=0
 print("WHAT FILE DO YOU WANT TO OPEN? (1 FOR test1.txt) (2 FOR test2.txt) ")
 opcion= int(input())
 
+#We open the selected file
 if opcion==1:
     f = open("test1.txt", "r")
 elif opcion==2:
     f = open("test2.txt", "r")
 
-
+#These are the variables we used to read the input
 lines=f.readlines()
 states=lines[0].split(",")
 states[len(states)-1]=states[len(states)-1].strip()
@@ -31,36 +32,36 @@ dicc={}
 first=True
 equivalent=True
 
-
+#We get the evaluations with a split from the following lines
 for x in range(4,len(lines)):
     evaluations.append(lines[x].split("=>"))
     evaluations[-1][1]=evaluations[-1][1].strip()
     evaluations[-1][0]=evaluations[-1][0].replace(",","")
 
+#We add them yo a dictionary
 dicc=dict(evaluations)
+
+#Recursive function to traverse the graph of the states
 def rec_path(state, str_rec):
 
     print("CURRENT STATE: ", state, " CURRENT STRING: ", str_rec)
-    if len(str_rec) == 0:
+    if len(str_rec) == 0:       #This is the base case of the recursive function
         return state in finalStates
 
     key = state + str_rec[len(str_rec) - 1]
     print("KEY: ", key)
-    if key in dicc.keys():
+    if key in dicc.keys():                  #If the current character is in the dictionary, then we call the recursive function again
         return rec_path(dicc[key], str_rec[:-1])
     return False
-    
+
+#Function to call the recursive functino rec_path
 def check_dfa(str_val):
     return rec_path(initialState, str_val)
-    print(str_val)
 
-
-
-
-
+#Function to fill the table with values that are empty in the dictionary but exist in the states so we can compare each one
 def fill_keys():
     global first
-    if(first==True):
+    if(first==True):        #We verify that it is just called one time with a bool
         for state in states:
             for lang in symbols:
                 key = state + lang
@@ -68,14 +69,12 @@ def fill_keys():
                     dicc[key] = 'X'
         first=False
 
-
+#This is the function to find the equivalents between the states
 def find_match(noEquivalents):
     global globalIndex,initialState
 
-
-
     table = []
-    for state in states: # q0
+    for state in states: # q0       #We build the transition table
         row_state = []
         row_state.append(state)
         row_state.append([])
@@ -85,8 +84,8 @@ def find_match(noEquivalents):
         table.append(row_state)
 
     equivalents = []
-    print(table)
-    for line in table:
+
+    for line in table:              #We check which states are equivalent according to the table above
         transitions = line[1]
         list_eq = []
         for line_it in table:
@@ -97,17 +96,14 @@ def find_match(noEquivalents):
                 equivalents.append(list_eq)
 
     print("EQUIVALENTS", equivalents)
-    if not equivalents:
+    if not equivalents:             #We check if the equivalents table is empty, means that it can't be minimized
         print("THERE ARE NO EQUIVALENTS")
         noEquivalents=False
 
     print("------------------------------------------------------------------")
 
-    # q1: qA, q3: qA
-    # q2: qB, q4: qB
-
     temp_dict = {}
-    if(globalIndex==0):
+    if(globalIndex==0):             #We build the temporal dictionary with the equivalences so we can change the names
         for index in range(0, len(equivalents)):
             alias = "Q-" + str(index)
 
@@ -123,7 +119,7 @@ def find_match(noEquivalents):
 
     new_dict = {}
 
-    for key in dicc.keys():
+    for key in dicc.keys():         #We replace the states with the equivalent ones in the temporal dictionary
         state = key[:-1]
         if state in temp_dict.keys():
             new_key = temp_dict[state] + key[len(key) - 1]
@@ -131,11 +127,11 @@ def find_match(noEquivalents):
         new_dict[new_key] = dicc[key]
 
     for key in new_dict.keys():
-
         if new_dict[key] in temp_dict.keys():
             new_dict[key] = temp_dict[new_dict[key]]
 
-    for key in temp_dict.keys():
+
+    for key in temp_dict.keys():        #We update the states, final states and initial states for further iterations
         if key in states:
             states.remove(key)
         if key in finalStates:
@@ -146,7 +142,9 @@ def find_match(noEquivalents):
             initialState=temp_dict[key]
         if temp_dict[key] not in states:
             states.append(temp_dict[key])
-    if noEquivalents==True:
+
+
+    if noEquivalents==True:             #We print the new information
         print("NEW INITIAL STATE",initialState, "\n")
         print("NEW FINAL STATES: ", finalStates,"\n")
         print("STATES: ",states, "\n")
@@ -155,6 +153,7 @@ def find_match(noEquivalents):
         print("NEW DICTIONARY: ", new_dict,"\n")
         print("-----------------------------------------------------------------------------------------------")
     return new_dict,noEquivalents
+
 
 print("THIS ARE YOUR STATES: ",states)
 opcion2=0
@@ -166,27 +165,13 @@ while(opcion2!=3):
         print("GIVE THE STRING TO VALIDATE")
         print("THIS IS THE LANGUAGE: ",symbols)
         opcion3=str(input())
-
-
         print(check_dfa(str(opcion3)))
+
     elif opcion2==2:
         print("---------------------------------------------------------")
         fill_keys()
 
-        while(equivalent==True):
+        while(equivalent==True):            #We loop the minized function until there are no equivalents
             dicc,equivalent=find_match(equivalent)
         print("---------------------------------------------------------")
 
-
-# Extraer el estado 
-# Buscar entradas "q0" + "a", "q0" + "b" ... hasta todos los caracteres en el lenguaje
-# Si no existe la entrada, llenar el key con un string vacio ""
-
-# Iterar para cada uno de los estados
-    # Extraer los estados para cada valor en la transición
-    # Buscar todos aquellos estados que tienen los mismos valores de transición 
-    # Si son iguales, añadir en lista de equivalencia
-
-# Remplazar todos los estados equivalentes por un nuevo key
-
-# Llenar el diccionario
