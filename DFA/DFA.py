@@ -1,3 +1,5 @@
+import numpy as np
+
 states=[]
 symbols=[]
 initialState=''
@@ -47,6 +49,48 @@ print(evaluations)
 print(dicc)
 print(finalStates)
 print(check_dfa('aba'))
+print(symbols)
 #print(states,symbols,initialState,finalStates)
 #print(f.read())
+
+# Llenar el diccionario
+
+def fill_keys():
+    for state in states:
+        for lang in symbols:
+            key = state + lang
+            if key not in dicc.keys():
+                dicc[key] = 'X'
+fill_keys()
+print(dicc)
+
+def find_match():
+    table = []
+    for state in states: # q0
+        row_state = []
+        row_state.append(state)
+        for lang in symbols:
+            key = state + lang 
+            row_state.append(dicc[key])
+        table.append(row_state)
+
+    for line in table:
+        print(line, '\n')
+    
+    
+
+    
+find_match()
+
+# Extraer el estado 
+# Buscar entradas "q0" + "a", "q0" + "b" ... hasta todos los caracteres en el lenguaje
+# Si no existe la entrada, llenar el key con un string vacio ""
+
+# Iterar para cada uno de los estados
+    # Extraer los estados para cada valor en la transición
+    # Buscar todos aquellos estados que tienen los mismos valores de transición 
+    # Si son iguales, añadir en lista de equivalencia
+
+# Remplazar todos los estados equivalentes por un nuevo key
+
 
