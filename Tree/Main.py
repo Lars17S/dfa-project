@@ -1,4 +1,5 @@
 tree = dict()
+depth_dict= dict()
 nonTerminal = list()
 terminal = list()
 rootKey = ''
@@ -7,30 +8,49 @@ productions = dict()
 def top_down_parsing(maxDepth, inputStr):
     queue = []
     queue.append(rootKey)
-    depth = 0
+    depth_dict[rootKey] = 0
     uwv = ''
-    while queue and depth != maxDepth and inputStr != uwv:
+    input_found = False
+    while queue and not input_found:
         q = queue.pop(0) # Node to analyze
-        i = 0 # Used rule
+        if depth_dict[q] + 1 > maxDepth:
+            break
         done = False
         for i in range(len(q)):
             if q[i].isupper():
                 node_part = q.partition(q[i]) # () - () - ()
                 break
-        while not done and inputStr != uwv:
+        while not done and not input_found:
             rules = productions[node_part[1]]
             for w in rules:
-                uwv = node_part[0] + w + node_part[2] # Left - Central new Production - Right
-                # count_terminal = 0
-                # for ch_uwv in uwv:
-                #     if ch_uwv in terminal:
-                #         count_terminal += 1
-                insert_node(q, uwv)
-                queue.append(uwv)
+                uwv = ''
+                u = node_part[0]
+                v = node_part[2]
+                uwv += u + w + v # Left - Central new Production - Right
+                nonTerminal_node = False
+                for ch in uwv:
+                    if ch.isupper():
+                        nonTerminal_node = True
+                        break
+                prefix_match = True
+                for i in range(len(u)):
+                    if i < len(inputStr) and u[i] != inputStr[i]:
+                        prefix_match = False
+                        break
+                if nonTerminal_node and prefix_match:
+                    depth_dict[uwv] = depth_dict[q] + 1
+                    insert_node(q, uwv)
+                    queue.append(uwv)
+                if not nonTerminal_node and prefix_match:
+                    depth_dict[uwv] = depth_dict[q] + 1
+                    insert_node(q, uwv)
+                if uwv == inputStr:
+                    input_found = True
+                    break
             done = True
-        print('queue: ', queue)
-        depth += 1
     print(tree)
+    print(depth_dict)
+    print(input_found)
 
 def insert_node(key, node):
     if key not in tree.keys():
@@ -50,4 +70,4 @@ with open("test1.txt") as f:
             productions[key] = list()
         productions[key].append(value)
 
-top_down_parsing(6, 'XDalchnoentendi')
+top_down_parsing(10, 'abbbb')
