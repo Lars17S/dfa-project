@@ -177,9 +177,9 @@ while(opcion2!=3):
         print("THIS IS THE LANGUAGE: ",symbols)
         opcion3=str(input())
         if check_dfa(str(opcion3)):
-            print("TRUE: The string is validated because ends in a final state")
+            print("TRUE: The string is ACCEPTED because ends in a final state")
         else:
-            print("FALSE: The string is not validated because it does not end in final state")
+            print("FALSE: The string is NOT ACCEPTED because it does not end in final state")
 
     elif opcion2==2:
         print("---------------------------------------------------------")
