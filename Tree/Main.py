@@ -1,10 +1,10 @@
-Tree = {'S': ['AbA', 'AsA'], 'AbA': [''], 'K': ['']}
+tree = dict()
 nonTerminal = list()
 terminal = list()
 rootKey = ''
 productions = dict()
 
-def top_down_parsing(Tree, maxDepth, inputStr):
+def top_down_parsing(maxDepth, inputStr):
     queue = []
     queue.append(rootKey)
     depth = 0
@@ -21,15 +21,21 @@ def top_down_parsing(Tree, maxDepth, inputStr):
             rules = productions[node_part[1]]
             for w in rules:
                 uwv = node_part[0] + w + node_part[2] # Left - Central new Production - Right
-                count_terminal = 0
-                for ch_uwv in uwv:
-                    if ch_uwv in terminal:
-                        count_terminal += 1
-                
-
+                # count_terminal = 0
+                # for ch_uwv in uwv:
+                #     if ch_uwv in terminal:
+                #         count_terminal += 1
+                insert_node(q, uwv)
+                queue.append(uwv)
+            done = True
+        print('queue: ', queue)
+        depth += 1
+    print(tree)
 
 def insert_node(key, node):
-    Tree[key].append(node)
+    if key not in tree.keys():
+        tree[key] = list()
+    tree[key].append(node)
 
 with open("test1.txt") as f:
     lines = f.readlines()
@@ -40,18 +46,8 @@ with open("test1.txt") as f:
         string_line = lines[i].split('->')
         key = string_line[0]
         value = string_line[1].strip()
-        if key in productions.keys():
-            productions[key].append(value)
-        else:
+        if key not in productions.keys():
             productions[key] = list()
-            productions[key].append(value)
-    print(terminal)
-    print(nonTerminal)
-    print(rootKey)
-    print(productions)
+        productions[key].append(value)
 
-  
-
-# for Parent, Children in Families.items():
-#     print(f"{Parent} has {len(Children)} kid(s):")
-#     print(f"{', and '.join([str(Child) for Child in [*Children]])}")
+top_down_parsing(6, 'XDalchnoentendi')
