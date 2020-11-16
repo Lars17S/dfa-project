@@ -4,6 +4,30 @@ terminal = list()
 rootKey = ''
 productions = dict()
 
+def top_down_parsing(Tree, maxDepth, inputStr):
+    queue = []
+    queue.append(rootKey)
+    depth = 0
+    uwv = ''
+    while queue and depth != maxDepth and inputStr != uwv:
+        q = queue.pop(0) # Node to analyze
+        i = 0 # Used rule
+        done = False
+        for i in range(len(q)):
+            if q[i].isupper():
+                node_part = q.partition(q[i]) # () - () - ()
+                break
+        while not done and inputStr != uwv:
+            rules = productions[node_part[1]]
+            for w in rules:
+                uwv = node_part[0] + w + node_part[2] # Left - Central new Production - Right
+                count_terminal = 0
+                for ch_uwv in uwv:
+                    if ch_uwv in terminal:
+                        count_terminal += 1
+                
+
+
 def insert_node(key, node):
     Tree[key].append(node)
 
